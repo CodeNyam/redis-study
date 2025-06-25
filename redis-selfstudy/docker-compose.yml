@@ -1,0 +1,28 @@
+services:
+  redis-study-app:
+    build: .
+    container_name: redis-study-app
+    ports:
+      - "28080:8080"
+#    env_file:
+    depends_on:
+      redis-study-redis:
+        condition: service_healthy
+
+    environment:
+      - SPRING_REDIS_HOST=redis-study-redis
+      - SPRING_REDIS_PORT=6379
+    mem_limit: 1024m
+
+
+  redis-study-redis:
+    container_name: redis-study-redis
+    image: "redis:latest"
+    ports:
+      - "26379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
